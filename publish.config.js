@@ -16,7 +16,7 @@ module.exports = {
     // 发布前执行
     before(config) {
         console.log("npm run build ... ")
-        // execSync(`npm run build`)
+        execSync(`npm run build`)
     },
     // 发布后执行
     after(config) {
