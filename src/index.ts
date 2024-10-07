@@ -7,6 +7,7 @@ export interface Options {
     collapsedValue?: boolean,
     root: string,
     mindmapDomain?: string,
+    mindDirectory?: string,
 }
 
 
@@ -77,10 +78,10 @@ export function replaceSortNumber(name: any) {
     return name
 }
 
-// interface HTitle {
-//     title?: string,
-//     children?: HTitle[]
-// }
+interface HTitle {
+    title?: string,
+    children?: HTitle[]
+}
 
 // function extractH2H3Titles(markdownText: string) {
 //     // 定义正则表达式匹配二级和三级标题
@@ -263,4 +264,99 @@ export function getNav(dir: string, options: NavOptions): NavItem[] {
         }
     })
     return result.sort((a, b) => a.sort - b.sort)
+}
+
+interface SidebarNode {
+    text?: string;
+    sort?: number;
+    link?: string;
+    activeMatch?: string;
+    root?: boolean;
+    children?: SidebarNode[];
+    hyperLink?: string;
+    toic?: string;
+    titles?: HTitle[];
+    expanded?: boolean;
+}
+
+function formatTree(menuTree: { [x: string]: any; }) {
+    const result: Record<string, any> = {};
+    for (const key in menuTree) {
+        if (Object.prototype.hasOwnProperty.call(menuTree, key)) {
+            const item = menuTree[key];
+            function formatChildren(items: any[]) {
+                const result: SidebarNode[] = []
+                if (!items) return result
+                items.forEach((child) => {
+                    if (!child.isMindMap) {
+                        const mindData = {
+                            topic: child.text,
+                            hyperLink: child.link ? `${child.link}.html` : "",
+                            id: child.text,
+                            root: false,
+                            children: formatChildren(child.items),
+                            expanded: true,
+
+                        };
+                        if (child?.titles?.length && child.link) {
+                            mindData.children = child.titles.map(({ title, children = [] } = {
+                                title: '', children: []
+                            }) => {
+                                return {
+                                    topic: title,
+                                    hyperLink: `${child.link}.html#${title}`,
+                                    id: title,
+                                    root: false,
+                                    expanded: false,
+                                    style: {
+                                        // 节点样式
+                                        background: '#e0e4ea'
+                                    },
+                                    children: []
+                                    // children: children.map((h3: { title: string, children: any[] }) => {
+                                    //     return {
+                                    //         topic: item,
+                                    //         hyperLink: `${child.link}.html#${h3.title}`,
+                                    //         id: item,
+                                    //         root: false,
+                                    //         expanded: false,
+                                    //         style: {
+                                    //             // 节点样式
+                                    //             background: '#e0e4ea'
+                                    //         },
+                                    //     }
+                                    // })
+                                }
+                            })
+                            mindData.expanded = false;
+                        }
+                        result.push(mindData as SidebarNode)
+                    }
+                })
+                return result
+            }
+            result[key] = {
+                topic: replaceSortNumber(key.replace(/\//g, "")),
+                id: key,
+                children: formatChildren(item),
+                root: true
+            }
+
+        }
+
+    }
+    return result
+}
+
+export const buildMindMap = (options: Options) => {
+    try {
+        const mindDir = path.resolve(process.cwd(), options?.mindDirectory || ".");
+        const sider = getSideBar("./docs", options);
+        // fs.writeFileSync("./mindmap/origin-source.json", JSON.stringify(sider,null,2), "utf-8")
+        fs.writeFileSync(mindDir, JSON.stringify(formatTree(sider), null, 2), "utf-8")
+        console.log(`文件生成成功< ${mindDir} >`)
+    } catch (error) {
+        console.log(error)
+    }
+
 }
