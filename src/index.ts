@@ -1,14 +1,18 @@
 
 import * as fs from 'fs'
 import * as path from 'path'
+import * as childProcess from 'child_process'
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 export interface Options {
-    exculde?: string[],
-    collapsed?: boolean,
-    collapsedValue?: boolean,
-    root: string,
-    mindmapDomain?: string,
-    mindDirectory?: string,
-    inputDir: string,
+    exculde?: string[];
+    collapsed?: boolean
+    collapsedValue?: boolean
+    root?: string;
+    mindmapDomain?: string
+    mindDirectory?: string
+    inputDir: string;
+    level?: number
 }
 
 
@@ -362,4 +366,25 @@ export const buildMindMap = (options: Options) => {
         console.log(error)
     }
 
+}
+
+export const getAutoConfig = async () => {
+    // 读取当前 执行目录下的配置文件，并返回配置  auto.config.ts
+    // childProcess.execSync("ts-node");
+    const config = await import(path.resolve(process.cwd(), "auto.config.ts")); // 替换为你的配置文件路径
+    console.log(config.default); // 输出导出的配置内容
+    // const config = require(path.resolve(process.cwd(), "auto.config.ts"));
+    // return config;
+}
+
+interface DefineConfigOptions {
+    sidebarConfig?: Options
+}
+interface OptionCallback {
+    (): Promise<DefineConfigOptions> | DefineConfigOptions
+}
+
+// defineConfig 允许接受 对象/函数 参数，返回一个对象
+export const defineConfig = async (options: DefineConfigOptions | OptionCallback) => {
+    return typeof options === "function" ? await options() : options;
 }
