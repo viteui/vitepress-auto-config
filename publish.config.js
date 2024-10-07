@@ -5,9 +5,9 @@ module.exports = {
     // 发布目录
     root: ".",
     // 是否同步git
-    syncGit: true,
+    syncGit: false,
     // 是否同步git tag
-    syncGitTag: true,
+    syncGitTag: false,
     // 升级版本号的等级
     versionLevel: 'patch', // major | minor | patch
     // 自定义发布
