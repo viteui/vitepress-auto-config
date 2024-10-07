@@ -2,8 +2,13 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as childProcess from 'child_process'
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
+import { cosmiconfig } from 'cosmiconfig';
+import { register } from 'ts-node';
+
+// 注册 ts-node 支持 .ts 文件
+register();
+
+
 export interface Options {
     exculde?: string[];
     collapsed?: boolean
@@ -87,6 +92,8 @@ interface HTitle {
     title?: string,
     children?: HTitle[]
 }
+
+
 
 // function extractH2H3Titles(markdownText: string) {
 //     // 定义正则表达式匹配二级和三级标题
@@ -368,13 +375,40 @@ export const buildMindMap = (options: Options) => {
 
 }
 
+
+// 定义配置文件的搜索路径
+const explorer = cosmiconfig('vitepress-auto-config', {
+    searchPlaces: [
+        'package.json',
+        'auto.config.json',
+        'auto.config.ts',
+        'auto.config.js',
+    ],
+});
+
+async function loadConfig() {
+    try {
+        const result = await explorer.search();
+        console.log(result);
+        if (result && result.config) {
+            const config = typeof result.config === 'function'
+                ? result.config()
+                : result.config;
+            console.log('Loaded config:', config);
+        } else {
+            console.log('No config found');
+        }
+    } catch (error) {
+        console.error('Error loading config:', error);
+    }
+}
+
+
+
+
+
 export const getAutoConfig = async () => {
-    // 读取当前 执行目录下的配置文件，并返回配置  auto.config.ts
-    // childProcess.execSync("ts-node");
-    const config = await import(path.resolve(process.cwd(), "auto.config.ts")); // 替换为你的配置文件路径
-    console.log(config.default); // 输出导出的配置内容
-    // const config = require(path.resolve(process.cwd(), "auto.config.ts"));
-    // return config;
+    loadConfig();
 }
 
 interface DefineConfigOptions {
