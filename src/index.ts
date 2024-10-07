@@ -8,6 +8,7 @@ export interface Options {
     root: string,
     mindmapDomain?: string,
     mindDirectory?: string,
+    inputDir: string,
 }
 
 
@@ -164,7 +165,8 @@ function buildSliderTree(dir: string, treeData: any, options: Options) {
     return buildSlider(treeData)
 }
 
-export function getSideBar(dir: string, options: Options): Sidebar | SidebarItem[] {
+export function getSideBar(options: Options): Sidebar | SidebarItem[] {
+    const dir = options.inputDir;
     const tree = generateDirectoryTreeObject(dir);
     const children = tree.children;
     const result: Record<string, any> = {};
@@ -351,7 +353,7 @@ function formatTree(menuTree: { [x: string]: any; }) {
 export const buildMindMap = (options: Options) => {
     try {
         const mindDir = path.resolve(process.cwd(), options?.mindDirectory || ".");
-        const sider = getSideBar("./docs", options);
+        const sider = getSideBar(options);
         // fs.writeFileSync("./mindmap/origin-source.json", JSON.stringify(sider,null,2), "utf-8")
         fs.writeFileSync(mindDir, JSON.stringify(formatTree(sider), null, 2), "utf-8")
         console.log(`文件生成成功< ${mindDir} >`)
