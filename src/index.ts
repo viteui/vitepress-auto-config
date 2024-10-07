@@ -188,7 +188,8 @@ export function getSideBar(options: Options): Sidebar | SidebarItem[] {
 }
 
 
-export function getNav(dir: string, options: NavOptions): NavItem[] {
+export function getNav(options: NavOptions): NavItem[] {
+    const dir = options.inputDir;
     const tree = generateDirectoryTreeObject(dir);
     const children = tree.children;
     const result: Array<any> = [];
