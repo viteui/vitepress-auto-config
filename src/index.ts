@@ -326,6 +326,33 @@ function formatTree(menuTree: { [x: string]: any; }) {
     return result
 }
 
+export const buildWebSiteMindMap = async (_options: Partial<Options>) => {
+    logger.info("开始生成网站思维导图...");
+    let options = _options
+    if (!options) {
+        let { sidebarConfig: options } = await getAutoConfig();
+    }
+
+    // cd vitepress-mindmap && npm run build    
+    const { spawn } = require('child_process');
+    // 构建当前网站
+    spawn('npm', ['run', 'build'], {
+        cwd: path.resolve(process.cwd(), "."),
+        stdio: 'inherit'
+    }).on('close', (code: number) => {
+        logger.success(`构建完成`)
+    })
+    // 构建vitepress-mindmap
+    const child = spawn('cd', ['vitepress-mindmap', '||', 'exit 1', '&&', 'npm', 'run', 'build'], {
+        cwd: path.resolve(process.cwd(), "."),
+        stdio: 'inherit'
+    })
+
+    child.on('close', (code: number) => {
+        logger.success(`构建完成`, code)
+    })
+
+}
 
 export const buildMindMap = async () => {
     try {
@@ -338,11 +365,10 @@ export const buildMindMap = async () => {
         if (!fs.existsSync(mindDir)) {
             fs.mkdirSync(mindDir, { recursive: true });
         }
-
         const sider = getSideBar(options);
-
         fs.writeFileSync(mindPath, JSON.stringify(formatTree(sider), null, 2), "utf-8")
         logger.success(`文件生成成功< ${mindPath} >`)
+        buildWebSiteMindMap(options)
     } catch (error) {
         console.log(error)
     }
