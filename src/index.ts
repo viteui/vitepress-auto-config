@@ -148,7 +148,9 @@ function buildSliderTree(dir: string, treeData: any, options: Partial<Options>) 
     return buildSlider(treeData)
 }
 
-export function getSideBar(options: Partial<Options>): Sidebar | SidebarItem[] {
+export async function getSideBar(_options: Partial<Options>): Promise<SidebarItem[] | Sidebar> {
+    const { sidebarConfig: default_options } = await getAutoConfig();
+    const options = { ...default_options, ..._options }
     const dir = options?.inputDir || '';
     const tree = generateDirectoryTreeObject(dir);
     const children = tree.children;
@@ -171,7 +173,9 @@ export function getSideBar(options: Partial<Options>): Sidebar | SidebarItem[] {
 }
 
 
-export function getNav(options: NavOptions): NavItem[] {
+export async function getNav(_options: NavOptions): Promise<NavItem[]> {
+    const { sidebarConfig: default_options } = await getAutoConfig();
+    const options = { ...default_options, ..._options }
     const dir = options.inputDir;
     const tree = generateDirectoryTreeObject(dir);
     const children = tree.children;
