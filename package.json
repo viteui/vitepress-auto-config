@@ -1,12 +1,12 @@
 {
   "name": "vitepress-generate",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "main": "./dist/index.js",
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsup",
-    "p": "pkg publish"
+    "p": "npm run build || exit 1  && pkg publish"
   },
   "exports": {
     ".": {

@@ -15,6 +15,7 @@ import {
     SidebarItem,
     SidebarNode
 } from './types';
+import { repoName } from './const';
 
 
 // 注册 ts-node 支持 .ts 文件
@@ -148,7 +149,7 @@ function buildSliderTree(dir: string, treeData: any, options: Partial<Options>) 
     return buildSlider(treeData)
 }
 
-export async function getSideBar(_options: Partial<Options>): Promise<SidebarItem[] | Sidebar> {
+export async function getSideBar(_options?: Partial<Options>): Promise<SidebarItem[] | Sidebar> {
     const { sidebarConfig: default_options } = await getAutoConfig();
     const options = { ...default_options, ..._options }
     const dir = options?.inputDir || '';
@@ -173,7 +174,7 @@ export async function getSideBar(_options: Partial<Options>): Promise<SidebarIte
 }
 
 
-export async function getNav(_options: NavOptions): Promise<NavItem[]> {
+export async function getNav(_options?: NavOptions): Promise<NavItem[]> {
     const { sidebarConfig: default_options } = await getAutoConfig();
     const options = { ...default_options, ..._options }
     const dir = options.inputDir;
@@ -332,16 +333,6 @@ export const buildWebSiteMindMap = async (_options: Partial<Options>) => {
     if (!options) {
         let { sidebarConfig: options } = await getAutoConfig();
     }
-
-    // cd vitepress-mindmap && npm run build    
-    // 构建，执行 build.sh
-    // const { spawn } = require('child_process');
-    // spawn('sh', ['build.sh'], {
-    //     cwd: path.resolve(process.cwd(), "."),
-    //     stdio: 'inherit'
-    // }).on('close', (code: number) => {
-    //     logger.success(`构建完成`)
-    // })
     const { spawn } = require('child_process');
     // 构建当前网站
     spawn('npm', ['run', 'build'], {
@@ -350,14 +341,14 @@ export const buildWebSiteMindMap = async (_options: Partial<Options>) => {
     }).on('close', (code: number) => {
         logger.success(`构建完成`)
         // 构建vitepress-mindmap
-        const child = spawn('cd', ['vitepress-mindmap'], {
+        const child = spawn('cd', [repoName], {
             cwd: path.resolve(process.cwd(), "."),
             stdio: 'inherit'
         })
         child.on('close', (code: number) => {
             logger.info("开始构建vitepress-mindmap...")
             const child = spawn('npm', ['run', 'build'], {
-                cwd: path.resolve(process.cwd(), "vitepress-mindmap"),
+                cwd: path.resolve(process.cwd(), repoName),
                 stdio: 'inherit'
             })
             child.on('close', (code: number) => {
