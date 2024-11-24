@@ -10,7 +10,8 @@ export interface Options {
     mindmapDomain?: string
     mindDirectory?: string
     inputDir: string;
-    level?: number
+    level?: number;
+    buildMindmap?: boolean;
 }
 
 export interface OptionCallback {

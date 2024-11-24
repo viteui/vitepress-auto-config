@@ -368,7 +368,10 @@ export const buildMindMap = async () => {
         const sider = getSideBar(options);
         fs.writeFileSync(mindPath, JSON.stringify(formatTree(sider), null, 2), "utf-8")
         logger.success(`文件生成成功< ${mindPath} >`)
-        buildWebSiteMindMap(options)
+        if (options?.buildMindmap) {
+            buildWebSiteMindMap(options)
+        }
+
     } catch (error) {
         console.log(error)
     }

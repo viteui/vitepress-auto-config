@@ -8,6 +8,7 @@ export default defineConfig(() => {
         collapsed: true,
         collapsedValue: true,
         mindDirectory: "./vitepress-mindmap/src/source/menus.json", // 输出目录
+        buildMindmap: true, // 是否构建思维导图项目，默认输出路径为 '../docs/.vitepress/dist/mindmap'
     }
     }
 })
