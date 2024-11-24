@@ -1,56 +1,31 @@
 
 import * as fs from 'fs'
 import * as path from 'path'
-import * as childProcess from 'child_process'
-import { cosmiconfig } from 'cosmiconfig';
+import { getAutoConfig } from './require'
 import { register } from 'ts-node';
+import logger from './log.js';
+import {
+    DefineConfigOptions,
+    NavItem,
+    NavOptions,
+    OptionCallback,
+    Options,
+    PathTree,
+    Sidebar,
+    SidebarItem,
+    SidebarNode
+} from './types';
+
 
 // 注册 ts-node 支持 .ts 文件
-register();
+register(
+    {
+        // 可选：指定你的 TypeScript 配置文件路径
+        project: './tsconfig.json',
+    }
+);
 
 
-export interface Options {
-    exculde?: string[];
-    collapsed?: boolean
-    collapsedValue?: boolean
-    root?: string;
-    mindmapDomain?: string
-    mindDirectory?: string
-    inputDir: string;
-    level?: number
-}
-
-
-export interface NavOptions extends Options {
-    level?: number;
-}
-export interface SidebarItem {
-    text: string,
-    sort: number,
-    link?: string,
-    items?: SidebarItem[],
-    collapsed?: boolean,
-}
-
-export interface Sidebar {
-    [key: string]: SidebarItem[]
-}
-export interface NavItem {
-    text: string,
-    link?: string,
-    items?: NavItem[],
-    activeMatch?: string,
-    target?: string
-    rel?: string,
-    sort?: number,
-}
-
-export interface PathTree {
-    path: string,
-    name: string,
-    type: string,
-    children?: PathTree[]
-}
 function generateDirectoryTreeObject(dirPath: string): PathTree {
     const stats = fs.statSync(dirPath);
     const treeObject: PathTree = {
@@ -88,10 +63,7 @@ export function replaceSortNumber(name: any) {
     return name
 }
 
-interface HTitle {
-    title?: string,
-    children?: HTitle[]
-}
+
 
 
 
@@ -127,7 +99,7 @@ interface HTitle {
 // }
 
 
-function buildSliderTree(dir: string, treeData: any, options: Options) {
+function buildSliderTree(dir: string, treeData: any, options: Partial<Options>) {
     function buildSlider(tree: any) {
         const item: SidebarItem = {
             text: replaceSortNumber(tree.name),
@@ -176,8 +148,8 @@ function buildSliderTree(dir: string, treeData: any, options: Options) {
     return buildSlider(treeData)
 }
 
-export function getSideBar(options: Options): Sidebar | SidebarItem[] {
-    const dir = options.inputDir;
+export function getSideBar(options: Partial<Options>): Sidebar | SidebarItem[] {
+    const dir = options?.inputDir || '';
     const tree = generateDirectoryTreeObject(dir);
     const children = tree.children;
     const result: Record<string, any> = {};
@@ -280,18 +252,6 @@ export function getNav(options: NavOptions): NavItem[] {
     return result.sort((a, b) => a.sort - b.sort)
 }
 
-interface SidebarNode {
-    text?: string;
-    sort?: number;
-    link?: string;
-    activeMatch?: string;
-    root?: boolean;
-    children?: SidebarNode[];
-    hyperLink?: string;
-    toic?: string;
-    titles?: HTitle[];
-    expanded?: boolean;
-}
 
 function formatTree(menuTree: { [x: string]: any; }) {
     const result: Record<string, any> = {};
@@ -362,60 +322,26 @@ function formatTree(menuTree: { [x: string]: any; }) {
     return result
 }
 
-export const buildMindMap = (options: Options) => {
+
+export const buildMindMap = async () => {
     try {
-        const mindDir = path.resolve(process.cwd(), options?.mindDirectory || ".");
+        logger.info("开始生成mindmap文件...")
+        const { sidebarConfig: options } = await getAutoConfig();
+        const mindPath = path.resolve(process.cwd(), options?.mindDirectory || ".");
+        // 根据mindDir文件地址获取文件的目录
+        const mindDir = path.dirname(mindPath);
+        // 如果目录不存在，则创建目录
+        if (!fs.existsSync(mindDir)) {
+            fs.mkdirSync(mindDir, { recursive: true });
+        }
+
         const sider = getSideBar(options);
-        // fs.writeFileSync("./mindmap/origin-source.json", JSON.stringify(sider,null,2), "utf-8")
-        fs.writeFileSync(mindDir, JSON.stringify(formatTree(sider), null, 2), "utf-8")
-        console.log(`文件生成成功< ${mindDir} >`)
+
+        fs.writeFileSync(mindPath, JSON.stringify(formatTree(sider), null, 2), "utf-8")
+        logger.success(`文件生成成功< ${mindPath} >`)
     } catch (error) {
         console.log(error)
     }
-
-}
-
-
-// 定义配置文件的搜索路径
-const explorer = cosmiconfig('vitepress-auto-config', {
-    searchPlaces: [
-        'package.json',
-        'auto.config.json',
-        'auto.config.ts',
-        'auto.config.js',
-    ],
-});
-
-async function loadConfig() {
-    try {
-        const result = await explorer.search();
-        console.log(result);
-        if (result && result.config) {
-            const config = typeof result.config === 'function'
-                ? result.config()
-                : result.config;
-            console.log('Loaded config:', config);
-        } else {
-            console.log('No config found');
-        }
-    } catch (error) {
-        console.error('Error loading config:', error);
-    }
-}
-
-
-
-
-
-export const getAutoConfig = async () => {
-    loadConfig();
-}
-
-interface DefineConfigOptions {
-    sidebarConfig?: Options
-}
-interface OptionCallback {
-    (): Promise<DefineConfigOptions> | DefineConfigOptions
 }
 
 // defineConfig 允许接受 对象/函数 参数，返回一个对象

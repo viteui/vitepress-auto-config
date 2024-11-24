@@ -1,8 +1,8 @@
 {
-  "name": "vitepress-auto-config",
-  "version": "0.0.20",
+  "name": "vitepress-generate",
+  "version": "0.0.11",
   "main": "./dist/index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsup",
@@ -10,22 +10,29 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "template"
   ],
+  "bin": {
+    "vitepress-generate": "./dist/bin.js",
+    "v-generate": "./dist/bin.js"
+  },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",
-    "wcrane-tool": "1"
+    "wcrane-tool": "1.0.45"
   },
   "dependencies": {
+    "chalk": "4",
+    "commander": "^12.1.0",
     "cosmiconfig": "^9.0.0",
     "ts-node": "^10.9.2"
   }

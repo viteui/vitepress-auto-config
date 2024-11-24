@@ -565,7 +565,7 @@ colorspace@1.1.x:
 
 commander@^12.1.0:
   version "12.1.0"
-  resolved "https://registry.npmmirror.com/commander/-/commander-12.1.0.tgz#01423b36f501259fdaac4d0e4d60c96c991585d3"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-12.1.0.tgz#01423b36f501259fdaac4d0e4d60c96c991585d3"
   integrity sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==
 
 commander@^4.0.0:
@@ -1401,10 +1401,10 @@ v8-compile-cache-lib@^3.0.1:
   resolved "https://registry.yarnpkg.com/v8-compile-cache-lib/-/v8-compile-cache-lib-3.0.1.tgz#6336e8d71965cb3d35a1bbb7868445a7c05264bf"
   integrity sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==
 
-wcrane-tool@1:
-  version "1.0.40"
-  resolved "https://registry.yarnpkg.com/wcrane-tool/-/wcrane-tool-1.0.40.tgz#1522ae2f21086ce0f4d5335d51fabc8a60ec8f7e"
-  integrity sha512-5jN7NBhB6m+Xv5trR2ENt3DIEOk7PDb93VUJaVQLdcaesYW5bberHe1nS7xb9t+j2vRd4/PENLk5gdgd1Vu3pw==
+wcrane-tool@1.0.45:
+  version "1.0.45"
+  resolved "https://registry.yarnpkg.com/wcrane-tool/-/wcrane-tool-1.0.45.tgz#a1372d5393b47c1633cc8f9288548cc95748f3d6"
+  integrity sha512-d7YP2Rr+oQ6VDgsFq/Ft1nYkKEkMhs9cOSldyFrfi4NP0qNhzEYqvZ+AWBZYx9Eo6wF1jj8lUbC7Jui6/YGMUw==
   dependencies:
     chalk "4"
     cli-spinner "^0.2.10"

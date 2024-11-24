@@ -1,0 +1,13 @@
+import { defineConfig } from 'vitepress-generate'
+export default defineConfig(() => {
+    return {
+       sidebarConfig: {
+        inputDir: './docs',
+        root: 'docs',
+        exculde: ["codeSnippet", "md", "public", ".vitepress", ".DS_Store", "vite.config.ts", "index.md", "liveDomain.md"],
+        collapsed: true,
+        collapsedValue: true,
+        mindDirectory: "./vitepress-mindmap/src/source/menus.json", // 输出目录
+    }
+    }
+})
