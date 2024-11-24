@@ -361,8 +361,11 @@ export const buildWebSiteMindMap = async (_options: Partial<Options>) => {
                 stdio: 'inherit'
             })
             child.on('close', (code: number) => {
-                logger.success(`构建完成`, code)
-                logger.success(`思维导图生成成功`)
+                if (code !== 0) {
+                    logger.error(`构建失败`, code)
+                } else {
+                    logger.success(`思维导图生成成功`)
+                }
             })
         })
     })
