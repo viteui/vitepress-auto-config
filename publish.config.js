@@ -24,7 +24,7 @@ module.exports = {
     },
     // git tag 格式
     gitTagFormat: (version) => {
-        return `release / v${version} `
+        return `release/v${version} `
     },
 }
 
