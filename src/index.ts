@@ -334,6 +334,14 @@ export const buildWebSiteMindMap = async (_options: Partial<Options>) => {
     }
 
     // cd vitepress-mindmap && npm run build    
+    // 构建，执行 build.sh
+    // const { spawn } = require('child_process');
+    // spawn('sh', ['build.sh'], {
+    //     cwd: path.resolve(process.cwd(), "."),
+    //     stdio: 'inherit'
+    // }).on('close', (code: number) => {
+    //     logger.success(`构建完成`)
+    // })
     const { spawn } = require('child_process');
     // 构建当前网站
     spawn('npm', ['run', 'build'], {
@@ -341,17 +349,23 @@ export const buildWebSiteMindMap = async (_options: Partial<Options>) => {
         stdio: 'inherit'
     }).on('close', (code: number) => {
         logger.success(`构建完成`)
+        // 构建vitepress-mindmap
+        const child = spawn('cd', ['vitepress-mindmap'], {
+            cwd: path.resolve(process.cwd(), "."),
+            stdio: 'inherit'
+        })
+        child.on('close', (code: number) => {
+            logger.info("开始构建vitepress-mindmap...")
+            const child = spawn('npm', ['run', 'build'], {
+                cwd: path.resolve(process.cwd(), "vitepress-mindmap"),
+                stdio: 'inherit'
+            })
+            child.on('close', (code: number) => {
+                logger.success(`构建完成`, code)
+                logger.success(`思维导图生成成功`)
+            })
+        })
     })
-    // 构建vitepress-mindmap
-    const child = spawn('cd', ['vitepress-mindmap', '||', 'exit 1', '&&', 'npm', 'run', 'build'], {
-        cwd: path.resolve(process.cwd(), "."),
-        stdio: 'inherit'
-    })
-
-    child.on('close', (code: number) => {
-        logger.success(`构建完成`, code)
-    })
-
 }
 
 export const buildMindMap = async () => {
