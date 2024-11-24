@@ -382,7 +382,7 @@ export const buildMindMap = async () => {
         if (!fs.existsSync(mindDir)) {
             fs.mkdirSync(mindDir, { recursive: true });
         }
-        const sider = getSideBar(options);
+        const sider = await getSideBar(options);
         fs.writeFileSync(mindPath, JSON.stringify(formatTree(sider), null, 2), "utf-8")
         logger.success(`文件生成成功< ${mindPath} >`)
         if (options?.buildMindmap) {
